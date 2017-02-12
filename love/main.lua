@@ -6,9 +6,9 @@ function love.load()
   
   --load character
   character = {}
-  character.image_name = "res/sample.png"
+  character.image_name = "res/vulture.jpeg"
   character.image = love.graphics.newImage(character.image_name)
-  character.pose_number = 8
+  character.pose_number = 7
   
   character.total_width = character.image:getWidth()
   character.total_height = character.image:getHeight()
