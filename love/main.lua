@@ -1,5 +1,19 @@
 local character
 
+  --get the size of the window to move the character
+ local width, height = love.graphics.getDimensions( )
+
+function filter_white( x, y, r, g, b, a )
+   if r>170 and g>170 and b>170 then
+     a = 0
+   else
+     r=(x/width)*255
+     g=y%255
+     b=x*y%255
+   end
+   return r,g,b,a
+end
+
 function love.load()
   --debug
   if arg[#arg] == "-debug" then require("mobdebug").start() end
@@ -8,6 +22,8 @@ function love.load()
   character = {}
   character.image_name = "res/sample.png"
   character.image = love.graphics.newImage(character.image_name)
+  character.image:getData():mapPixel(filter_white)
+  character.image:refresh()
   character.pose_number = 8
   
   character.total_width = character.image:getWidth()
@@ -27,9 +43,7 @@ function love.load()
   end
   character.current_pose = character.sequence[character.pose_index]
   
-  --get the size of the window to move the character
-  width, height = love.graphics.getDimensions( )
-  character.posx = -character.pose_width
+  character.posx = width/2-character.pose_width/2
 end
 
 --keep delta time
