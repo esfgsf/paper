@@ -37,11 +37,18 @@ end
 --keep delta time
 dtotal = 0
 flip = 1
+demo = false
 function love.update(dt)
   dtotal = dtotal + dt
+  if dtotal > 10 then
+    demo = true
+  end
   --change sequence every refresh time
   if dtotal > refresh_rate then
-    if love.keyboard.isDown("right") then
+    if love.keyboard.isDown("right") or demo then
+      if love.keyboard.isDown("right") then
+        demo = false
+      end
       if flip == 1 then
         character.pose_index = (character.pose_index + 1) % character.pose_number
         character.current_pose = character.sequence[character.pose_index]
