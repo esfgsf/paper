@@ -3,15 +3,17 @@ local character
 function love.load()
   --debug
   if arg[#arg] == "-debug" then require("mobdebug").start() end
-  
+  --assuming we have a 2:1 ratio between height and with for one pose
+  local ratio = 2
   --load character
   character = {}
   character.image_name = "res/sample.png"
   character.image = love.graphics.newImage(character.image_name)
-  character.pose_number = 8
   
   character.total_width = character.image:getWidth()
   character.total_height = character.image:getHeight()
+
+  character.pose_number = ratio*math.abs(character.total_width/character.total_height)
   
   character.pose_height = character.image:getHeight()
   character.pose_width = character.image:getWidth() / character.pose_number
