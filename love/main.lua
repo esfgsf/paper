@@ -4,17 +4,66 @@ local config = {refresh_rate=.07}
 --keep delta time
 local dtotal = 0
 
+function filter_white( x, y, r, g, b, a )
+   if r>170 and g>170 and b>170 then
+     a = 0
+   else
+     r=x*255
+     g=y%255
+     b=x*y%255
+   end
+   return r,g,b,a
+end
+
+
+function pixel_erode( seuil, image, x, y )
+  local erode
+  for xi=x-1, x+1 do
+    for yi= y-1, y+1 do
+      if yi > 0 and yi < image:getHeight() and xi > 0 and xi < image:getWidth() then
+        local r, g, b = image:getPixel( xi , yi )
+        if r < seuil or g < seuil or b <seuil then
+           return true
+        end
+      end
+    end
+  end
+  return false
+end
+
+function erosion( image )
+  local x
+  local y
+  local eroded_image = love.image.newImageData(image:getWidth(),image:getHeight())
+  for x = 1, image:getWidth()-1 do
+      for y = 1, image:getHeight()-1 do
+          -- Pixel coordinates range from 0 to image width - 1 / height - 1.
+          --if 
+
+          if pixel_erode(120, image, x,y) then
+            local r, g, b = image:getPixel( x , y )
+            eroded_image:setPixel( x, y, r, g, b,255)
+          end
+      end
+  end
+  return eroded_image
+end
+
 function newCharacter(image_path,pose_count)
   --load character
   character = {}
-  character.image = love.graphics.newImage(image_path)
+  local imgData = love.image.newImageData(image_path)
+  
+  character.image = lg.newImage(erosion(imgData))
+  --character.image:refresh()
+  
   character.pose_count = pose_count
   
-  character.total_width = character.image:getWidth()
-  character.total_height = character.image:getHeight()
+  character.total_width = character.image:getWidth()/4
+  character.total_height = character.image:getHeight()/4
   
-  character.pose_height = character.image:getHeight()
-  character.pose_width = character.image:getWidth() / character.pose_count
+  character.pose_height = character.total_height
+  character.pose_width = character.total_width / character.pose_count
   
   character.sequence = {}
   
@@ -76,7 +125,7 @@ end
 function love.load()
   --debug
   if arg[#arg] == "-debug" then require("mobdebug").start() end
-  character = newCharacter("res/sample.png",8)
+  character = newCharacter("res/bonh.jpg",4)
   --get the size of the window to move the character
   config.width, config.height = lg.getDimensions( )
   character.flipx = 1
